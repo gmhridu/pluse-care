@@ -9,27 +9,16 @@ import {useState} from "react";
 import {UserFormValidation} from "@/lib/validation";
 import {useRouter} from "next/navigation";
 import {createUser} from "@/lib/actions/patient.actions";
-
-export enum FormFieldType {
-    INPUT = "input",
-    TEXTAREA = "textarea",
-    PHONE_INPUT = "phoneInput",
-    CHECKBOX = "checkbox",
-    SELECT = "select",
-    DATE_PICKER = "datePicker",
-    SKELETON = "skeleton",
-}
+import {FormFieldType} from "@/components/forms/PatientForm";
 
 
-const PatientForm = () => {
+const RegisterForm = ({user}: { user: User }) => {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter()
     const form = useForm<z.infer<typeof UserFormValidation>>({
         resolver: zodResolver(UserFormValidation),
         defaultValues: {
             name: "",
-            email: "",
-            phone: ""
         },
     });
 
@@ -40,7 +29,7 @@ const PatientForm = () => {
             const userData = {name, email, phone};
 
             const user = await createUser(userData);
-            
+
             if (user) {
                 router.push(`/patients/${user.$id}/register`)
             }
@@ -51,36 +40,22 @@ const PatientForm = () => {
     };
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
-                <section className="mb-12 space-y-4">
-                    <h1 className="header">Hi there 👋</h1>
-                    <p className="text-dark-700">Schedule your first appointment.</p>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12 flex-1">
+                <section className="space-y-4">
+                    <h1 className="header">Welcome 👋</h1>
+                    <p className="text-dark-700">Let us know more about yourself.</p>
+                </section>
+                <section className="space-y-4">
+                    <div className={'mb-9 space-y-1'}>
+                        <h2 className="sub-header">Personal Information.</h2>
+                    </div>
                 </section>
                 <CustomFormField
                     fieldType={FormFieldType.INPUT}
                     name="name"
-                    label="Full Name"
                     placeholder="John Doe"
                     iconSrc="/assets/icons/user.svg"
                     iconAlt="user"
-                    control={form.control}
-                />
-                <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    name="email"
-                    label="Email"
-                    placeholder="johndoe@plusecare.pro"
-                    iconSrc="/assets/icons/email.svg"
-                    iconAlt="email"
-                    control={form.control}
-                />
-                <CustomFormField
-                    fieldType={FormFieldType.PHONE_INPUT}
-                    name="phone"
-                    label="Phone Number"
-                    placeholder="(555) 123-4567"
-                    iconSrc="/assets/icons/email.svg"
-                    iconAlt="email"
                     control={form.control}
                 />
                 <SubmitButton isLoading={isLoading}>
@@ -91,4 +66,4 @@ const PatientForm = () => {
     );
 };
 
-export default PatientForm;
+export default RegisterForm;
